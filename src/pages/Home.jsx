@@ -27,7 +27,7 @@ const Home = () => {
 
           <div className="relative mb-4">
             <BlurText
-              text="Ravi Prasad 9653621614"
+              text="Ravi Prasad"
               delay={150}
               animateBy="words"
               direction="top"
