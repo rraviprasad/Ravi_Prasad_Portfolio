@@ -24,21 +24,43 @@ const Contact = () => {
         // NOTE: Replace these with your actual EmailJS credentials
         const SERVICE_ID = "service_40lhuji";
         const TEMPLATE_ID = "template_2b12a02";
+        const AUTO_REPLY_TEMPLATE_ID = "template_clo0fqf";
         const PUBLIC_KEY = "BspEgODFzAF9Zpua6";
 
         const templateParams = {
-            from_name: formData.name,
-            from_email: formData.email,
+            from_name: formData.name,      // Matches {{from_name}} in 'Admin Notification' template
+            from_email: formData.email,    // Matches {{from_email}} in 'Admin Notification' template
             to_name: "Ravi Prasad",
             message: formData.message,
             organization: formData.org || "Not provided",
         };
 
+        const autoReplyParams = {
+            to_email: formData.email,      // Matches {{to_email}} in 'User Auto-Reply' template
+            message: `Hi ${formData.name},
+
+Thank you for reaching out to us! 🙌
+We’ve received your message.
+
+For further information, feel free to contact us on WhatsApp at
++91 96536 21614 😊
+
+Best regards,
+Ravi Prasad`
+        };
+
+        // 1. Send Admin Notification (To You)
         emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, PUBLIC_KEY)
             .then((response) => {
-                console.log('SUCCESS!', response.status, response.text);
+                console.log('Main email sent SUCCESS!', response.status, response.text);
                 setStatus("Message sent successfully!");
                 setFormData({ name: "", email: "", org: "", services: "", message: "" });
+
+                // 2. Send Auto-Reply (To User)
+                emailjs.send(SERVICE_ID, AUTO_REPLY_TEMPLATE_ID, autoReplyParams, PUBLIC_KEY)
+                    .then((res) => console.log('Auto-reply sent!', res.status, res.text))
+                    .catch((err) => console.error('Auto-reply failed...', err));
+
             }, (error) => {
                 console.log('FAILED...', error);
                 setStatus("Failed to send message. Please try again.");
